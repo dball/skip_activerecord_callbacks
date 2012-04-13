@@ -1,5 +1,7 @@
 # Skip ActiveRecord Callbacks
 
+[![Build Status](https://secure.travis-ci.org/dball/skip_activerecord_callbacks.png)](http://travis-ci.org/dball/skip_activerecord_callbacks)
+
 Do you miss update_without_callbacks from Rails 2? You shouldn't,
 because ActiveRecord callbacks are not a particularly good way to
 implement system behavior. If you have to skip them routinely in the
