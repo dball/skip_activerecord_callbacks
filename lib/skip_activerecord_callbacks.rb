@@ -1,2 +1,1 @@
-module SkipActiverecordCallbacks
-end
+require 'skip_activerecord_callbacks/railtie'
