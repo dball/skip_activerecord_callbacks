@@ -26,7 +26,7 @@ model.
 
 ## Seriously?
 
-Yeah. But it seems to work just fine. The undecoration is the first
+Yeah, I know. But it seems to work just fine. The undecoration is the first
 thing that happens when running the `:save` callbacks, so it would seem
 the only way this could not work is if ActiveRecord failed to call the
 `run_callbacks` method on save, or if ActiveSupport needed to call the
