@@ -11,9 +11,9 @@ Gem::Specification.new do |s|
   s.email       = ["donald.ball@gmail.com"]
   s.homepage    = "http://github.com/dball/skip_activerecord_callbacks"
   s.summary     = "Lets you save activerecord models without callbacks"
-  s.description = "Lets you save activerecord models without callbacks"
+  s.description = "Provides support for the deprecated update_without_callbacks method from rails 2"
 
-  s.files = Dir["{lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
+  s.files = Dir["{lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md", "CHANGELOG.md"]
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency "rails", "~> 3.2"

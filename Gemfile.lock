@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    skip_activerecord_callbacks (0.0.1)
+    skip_activerecord_callbacks (0.1.0)
       rails (~> 3.2)
 
 GEM
