@@ -14,6 +14,7 @@ little while longer. I'm sorry.
 ## Usage
 
     product.update_without_callbacks
+    product.destroy_without_callbacks
 
 ## Implementation
 
@@ -24,6 +25,9 @@ which case it deletes itself, replaces the original `run_callbacks`
 method, and yields to the given block to do the work of saving the
 model.
 
+The `destroy_without_callbacks` method does the same ninja editing for
+`destroy`.
+
 ## Seriously?
 
 Yeah, I know. But it seems to work just fine. The undecoration is the first
@@ -33,3 +37,19 @@ the only way this could not work is if ActiveRecord failed to call the
 method twice in a save for some reason. Or if ActiveSupport stopped
 implementing callbacks with the `run_callbacks method`, but the tests
 should catch that.
+
+## What Could Possibly Go Wrong?
+
+`destroy_without_callbacks` seems to behave a little bit differently
+than the Rails 2 version. In Rails 2, it would apparently not call the
+model's `destroy` method if it happened to define one. In the project
+for which I wrote this, we had a guard protecting models from being
+destroyed except via `destroy_without_callbacks`:
+
+    def destroy
+      raise "hell"
+    end
+
+This is trivially fixable by moving the guard to a `before_destroy`
+callback, or more correctly by moving the persistent object lifecycle
+concerns up into a service model.
