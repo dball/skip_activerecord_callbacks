@@ -53,3 +53,10 @@ destroyed except via `destroy_without_callbacks`:
 This is trivially fixable by moving the guard to a `before_destroy`
 callback, or more correctly by moving the persistent object lifecycle
 concerns up into a service model.
+
+`update_without_callbacks` used to save the model without updating its
+dirty attribute changes hash. This is no longer the case. I regard the
+new behavior as more correct, to the extent that a hack built on a pile
+of hacks can be considered to exhibit correctness, but if it's
+problematic, it would be relatively easy to clone the changes hash and
+push it back afterwards.
