@@ -1,74 +1,100 @@
 require 'test_helper'
 
-class DestructionNotifier
+class Notifier
+  def self.product_was_saved(product)
+  end
+
+  def self.product_was_updated(product)
+  end
+
+  def self.product_was_created(product)
+  end
+
   def self.product_was_destroyed(product)
   end
 end
 
 class Product < ActiveRecord::Base
-  attr_accessible :name
-
-  before_save do |product|
-    product.name = 'bar'
+  after_save do |product|
+    Notifier.product_was_saved(product)
   end
 
-  after_save do |product|
-    product.name = product.name.titleize
+  after_update do |product|
+    Notifier.product_was_updated(product)
+  end
+
+  after_create do |product|
+    Notifier.product_was_created(product)
   end
 
   after_destroy do |product|
-    DestructionNotifier.product_was_destroyed(product)
+    Notifier.product_was_destroyed(product)
   end
 end
 
 describe SkipActiverecordCallbacks do
-  let(:product) { Product.new(:name => 'foo') }
-
-  describe "normal save" do
-    it "sets the product name to 'Bar'" do
-      product.save
-      product.name.must_equal 'Bar'
-      product.new_record?.must_equal false
-    end
-  end
+  let(:product) { Product.new }
 
   describe "#update_without_callbacks" do
-    it "saves a record without running its save callbacks" do
-      product.update_without_callbacks
-      product.name.must_equal 'foo'
-      product.new_record?.must_equal false
+    describe "on create" do
+      it "saves the record" do
+        product.update_without_callbacks
+        product.new_record?.must_equal false
+      end
+
+      it "skips the :save callbacks" do
+        Notifier.expects(:product_was_saved).never
+        product.update_without_callbacks
+      end
+
+      it "skips the :create callbacks" do
+        Notifier.expects(:product_was_created).never
+        product.update_without_callbacks
+      end
     end
 
-    it "updates a record without running its save callbacks" do
-      product.save
-      product.name = 'foo'
-      product.update_without_callbacks
-      product.name.must_equal 'foo'
-      product.new_record?.must_equal false
+    describe "update" do
+      before do
+        product.save
+        product.name = 'foo'
+      end
+
+      it "saves the record" do
+        product.update_without_callbacks
+        product.changes.empty?.must_equal true
+      end
+
+      it "skips the :save callbacks" do
+        Notifier.expects(:product_was_saved).never
+        product.update_without_callbacks
+      end
+
+      it "skips the :update callbacks" do
+        Notifier.expects(:product_was_updated).never
+        product.update_without_callbacks
+      end
     end
 
     it "restores the callbacks afterwards" do
       product.update_without_callbacks
+      Notifier.expects(:product_was_saved).with(product)
       product.save
-      product.name.must_equal 'Bar'
-    end
-  end
-
-  describe "normal destroy" do
-    it "destroys the model and runs the callbacks" do
-      product.save
-      DestructionNotifier.expects(:product_was_destroyed).with(product)
-      product.destroy
-      assert product.destroyed?
     end
   end
 
   describe "#destroy_without_callbacks" do
-    it "destroys a record without running the callbacks" do
+    before do
       product.save
-      DestructionNotifier.expects(:product_was_destroyed).never
+    end
+
+    it "destroys the model" do
       product.destroy_without_callbacks
-      assert product.destroyed?
+      product.destroyed?.must_equal true
+    end
+
+    it "skips the :destroy callbacks" do
+      Notifier.expects(:product_was_destroyed).never
+      product.destroy_without_callbacks
     end
   end
 end

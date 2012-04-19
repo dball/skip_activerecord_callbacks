@@ -11,17 +11,18 @@ module SkipActiveRecordCallbacks
     end
   end
 
-  # TODO: The cut and paste is sad
   class ModelDecorator
     def self.override_run_callbacks_to_skip_save_once(model)
       class << model
         alias :run_callbacks_orig :run_callbacks
         def run_callbacks(name, &block)
-          if name == :save
+          if name == :update || name == :create
             class << self
               undef :run_callbacks
               alias :run_callbacks :run_callbacks_orig
             end
+            yield
+          elsif name == :save
             yield
           else
             run_callbacks_orig(name, &block)
